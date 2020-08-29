@@ -30,6 +30,7 @@ class CircularSliderPaint extends StatefulWidget {
   final bool showHandlerOutter;
   final double sliderStrokeWidth;
   final bool shouldCountLaps;
+  final int initialLaps;
 
   CircularSliderPaint({
     @required this.mode,
@@ -50,13 +51,16 @@ class CircularSliderPaint extends StatefulWidget {
     @required this.showHandlerOutter,
     @required this.sliderStrokeWidth,
     @required this.shouldCountLaps,
+    @required this.initialLaps,
   });
 
   @override
-  _CircularSliderState createState() => _CircularSliderState();
+  _CircularSliderState createState() => _CircularSliderState(initialLaps);
 }
 
 class _CircularSliderState extends State<CircularSliderPaint> {
+  _CircularSliderState(int laps) : _laps = laps;
+
   bool _isInitHandlerSelected = false;
   bool _isEndHandlerSelected = false;
 
@@ -77,7 +81,7 @@ class _CircularSliderState extends State<CircularSliderPaint> {
   int _differenceFromInitPoint;
 
   /// will store the number of full laps (2pi radians) as part of the selection
-  int _laps = 0;
+  int _laps;
 
   /// will be used to calculate in the next movement if we need to increase or decrease _laps
   SlidingState _slidingState = SlidingState.none;
@@ -115,10 +119,10 @@ class _CircularSliderState extends State<CircularSliderPaint> {
         CustomPanGestureRecognizer:
             GestureRecognizerFactoryWithHandlers<CustomPanGestureRecognizer>(
           () => CustomPanGestureRecognizer(
-                onPanDown: _onPanDown,
-                onPanUpdate: _onPanUpdate,
-                onPanEnd: _onPanEnd,
-              ),
+            onPanDown: _onPanDown,
+            onPanUpdate: _onPanUpdate,
+            onPanEnd: _onPanEnd,
+          ),
           (CustomPanGestureRecognizer instance) {},
         ),
       },
@@ -294,7 +298,8 @@ class _CircularSliderState extends State<CircularSliderPaint> {
     }
 
     if (isSingleHandler) {
-      if (isPointAlongCircle(position, _painter.center, _painter.radius,padding: widget.handlerOutterRadius)) {
+      if (isPointAlongCircle(position, _painter.center, _painter.radius,
+          padding: widget.handlerOutterRadius)) {
         _isEndHandlerSelected = true;
         _onPanUpdate(details);
       }
